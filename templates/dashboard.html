@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="dashboard-container">
+
+    <!-- ================= MODEL PERFORMANCE ================= -->
+    <h2 class="dashboard-title" style="margin-top:30px;">
+        Model Performance
+    </h2>
+
+    <div class="analytics-grid">
+
+        <div class="analytics-card">
+            <h3>Accuracy</h3>
+            <p class="value green">{{ accuracy }}%</p>
+        </div>
+
+        <div class="analytics-card">
+            <h3>Precision</h3>
+            <p class="value blue">{{ precision }}%</p>
+        </div>
+
+        <div class="analytics-card">
+            <h3>Recall</h3>
+            <p class="value orange">{{ recall }}%</p>
+        </div>
+
+        <div class="analytics-card">
+            <h3>F1 Score</h3>
+            <p class="value purple">{{ f1_score }}%</p>
+        </div>
+
+    </div>
+
+    <!-- ================= PERFORMANCE CHART ================= -->
+    <h2 class="dashboard-title" style="margin-top:50px;">
+        Performance Metrics Chart
+    </h2>
+
+    <div class="chart-container">
+        <img src="{{ url_for('static', filename=performance_chart) }}"
+             alt="Performance Chart"
+             class="dashboard-chart">
+    </div>
+
+    <!-- ================= RISK DISTRIBUTION ================= -->
+    <h2 class="dashboard-title" style="margin-top:50px;">
+        Risk Distribution
+    </h2>
+
+    <div class="chart-container">
+        <img src="{{ url_for('static', filename=risk_chart) }}"
+             alt="Risk Distribution Chart"
+             class="dashboard-chart">
+    </div>
+
+    <!-- ================= DATASET ANALYTICS ================= -->
+    <h2 class="dashboard-title" style="margin-top:50px;">
+        Dataset Analytics
+    </h2>
+
+    <div class="analytics-grid">
+
+        <div class="analytics-card">
+            <h3>Total Students</h3>
+            <p class="value green">{{ stats.total_students }}</p>
+        </div>
+
+        <div class="analytics-card">
+            <h3>High Risk Students</h3>
+            <p class="value orange">{{ stats.high_risk }}</p>
+        </div>
+
+        <div class="analytics-card">
+            <h3>Suspended Students</h3>
+            <p class="value purple">{{ stats.suspended }}</p>
+        </div>
+
+        <div class="analytics-card">
+            <h3>Dropout Students</h3>
+            <p class="value blue">{{ stats.dropout }}</p>
+        </div>
+
+        <div class="analytics-card">
+            <h3>Average CGPA</h3>
+            <p class="value blue">{{ stats.avg_cgpa }}</p>
+        </div>
+
+        <div class="analytics-card">
+            <h3>Average Attendance</h3>
+            <p class="value orange">{{ stats.avg_attendance }}%</p>
+        </div>
+
+        <div class="analytics-card">
+            <h3>Overall Risk %</h3>
+            <p class="value green">{{ stats.risk_percent }}%</p>
+        </div>
+
+        <div class="analytics-card">
+            <h3>System Status</h3>
+            <p class="value purple">Active</p>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

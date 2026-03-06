@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="glass-card"
+    style="text-align: center; background: transparent; box-shadow: none; backdrop-filter: none; border: none;">
+    <h1 style="font-size: 2.5rem; margin-bottom: 1rem; color: #333;">Welcome to Student Counseling AI</h1>
+    <p style="font-size: 1.1rem; color: #666; margin-bottom: 3rem;">
+        Advanced predictions for student suspension risks and dropout prevention using Deep Learning.
+    </p>
+
+    <div class="button-grid">
+
+    <a href="/predict/suspension" class="nav-btn">
+        <h3>Students Suspension</h3>
+        <p>Predict suspension risks based on behavior/grades.</p>
+    </a>
+
+    <a href="/predict/dropout" class="nav-btn">
+        <h3>Early Drop Out</h3>
+        <p>Identify at-risk students for counseling.</p>
+    </a>
+    </div>
+</div>
+{% endblock %}

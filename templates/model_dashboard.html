@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="glass-card">
+    <h2>Model Performance Dashboard</h2>
+
+    <div class="metrics-grid">
+        <div class="metric-box">Accuracy: {{ accuracy }}</div>
+        <div class="metric-box">Precision: {{ precision }}</div>
+        <div class="metric-box">Recall: {{ recall }}</div>
+        <div class="metric-box">F1 Score: {{ f1_score }}</div>
+    </div>
+
+    <img src="{{ url_for('static', filename='images/model_metrics.png') }}"
+         style="width:100%; margin-top:20px;">
+</div>
+
+{% endblock %}
