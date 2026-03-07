@@ -129,13 +129,15 @@ def dashboard():
 
 # ================= PREDICTION ================= #
 # ================= PREDICTION ================= #
+# ================= PREDICTION ================= #
 @app.route('/predict/<prediction_type>', methods=['GET', 'POST'])
 def predict(prediction_type):
 
     if request.method == "POST":
         try:
+
             # ---------------------------
-            # 1️⃣ Validate Input
+            # 1️⃣ Get Form Data
             # ---------------------------
             cgpa = float(request.form['cgpa'])
             attendance = float(request.form['attendance'])
@@ -145,7 +147,7 @@ def predict(prediction_type):
             trend = float(request.form['trend'])
 
             # ---------------------------
-            # 2️⃣ Preprocess Data (Scaling)
+            # 2️⃣ Prepare DataFrame
             # ---------------------------
             features = pd.DataFrame([{
                 "CGPA": cgpa,
@@ -156,20 +158,20 @@ def predict(prediction_type):
                 "PerformanceTrend": trend
             }])
 
+            # ---------------------------
+            # 3️⃣ Scale Input
+            # ---------------------------
             scaled = scaler.transform(features)
             tensor_input = torch.tensor(scaled, dtype=torch.float32)
 
             # ---------------------------
-            # 3️⃣ Forward Pass (Model Prediction)
+            # 4️⃣ Model Prediction
             # ---------------------------
             with torch.no_grad():
                 outputs = model(tensor_input)
                 probabilities = torch.softmax(outputs, dim=1)
                 confidence, predicted = torch.max(probabilities, 1)
 
-            # ---------------------------
-            # 4️⃣ Decode Label
-            # ---------------------------
             model_label = label_encoder.inverse_transform(
                 [predicted.item()]
             )[0]
@@ -177,33 +179,43 @@ def predict(prediction_type):
             confidence_percent = round(confidence.item() * 100, 2)
 
             # ---------------------------
-            # 5️⃣ Apply Business Logic
+            # 5️⃣ Business Logic Override
             # ---------------------------
             suspension_score = 0
             dropout_score = 0
 
             if behavior < 4:
                 suspension_score += 3
+
             if attendance < 60:
                 suspension_score += 2
+
             if trend == -1:
                 suspension_score += 1
 
+
             if income < 20000:
                 dropout_score += 3
+
             if cgpa < 5:
                 dropout_score += 2
+
             if backlogs >= 1 and backlogs <= 3:
                 dropout_score += 1
+
             elif backlogs > 3:
                 dropout_score += 2
 
+
             if suspension_score >= 3 and suspension_score > dropout_score:
                 final_label = "Suspended"
+
             elif dropout_score >= 3 and dropout_score > suspension_score:
                 final_label = "Dropout"
+
             else:
                 final_label = model_label
+
 
             # ---------------------------
             # 6️⃣ Generate Explanation
@@ -212,36 +224,86 @@ def predict(prediction_type):
             suggestions = []
 
             if final_label == "Suspended":
+
                 if behavior < 4:
                     reasons.append("Low behavior rating.")
+
                 if attendance < 60:
-                    reasons.append("Low attendance.")
+                    reasons.append("Very low attendance.")
+
                 if trend == -1:
                     reasons.append("Declining academic trend.")
-                suggestions.append("Behavior counseling required.")
+
+                suggestions.append(
+                    "Immediate counseling and disciplinary monitoring recommended."
+                )
+
 
             elif final_label == "Dropout":
+
                 if income < 20000:
-                    reasons.append("Financial instability.")
+                    reasons.append("Financial instability affecting education.")
+
                 if cgpa < 5:
                     reasons.append("Very low CGPA.")
+
                 if backlogs > 3:
-                    reasons.append("Multiple backlogs.")
-                suggestions.append("Provide financial and academic support.")
+                    reasons.append("Multiple academic backlogs.")
+
+                suggestions.append(
+                    "Provide financial aid and academic mentoring."
+                )
+
 
             elif final_label == "High Risk":
-                reasons.append("Multiple moderate academic indicators.")
-                suggestions.append("Monitor student closely.")
+
+                if attendance < 70:
+                    reasons.append("Low attendance level.")
+
+                if cgpa < 6:
+                    reasons.append("Below average CGPA.")
+
+                if backlogs >= 2:
+                    reasons.append("Multiple academic backlogs.")
+
+                suggestions.append(
+                    "Close academic monitoring and mentoring required."
+                )
+
+
+            elif final_label == "Medium Risk":
+
+                if attendance < 75:
+                    reasons.append("Moderate attendance level.")
+
+                if cgpa < 7:
+                    reasons.append("Average academic performance.")
+
+                if backlogs >= 1:
+                    reasons.append("Presence of academic backlogs.")
+
+                suggestions.append(
+                    "Encourage consistent study habits and monitor progress."
+                )
+
 
             elif final_label == "Low Risk":
-                reasons.append("Stable academic profile.")
-                suggestions.append("Maintain performance.")
+
+                reasons.append(
+                    "Student shows stable academic performance and good behavior."
+                )
+
+                suggestions.append(
+                    "Maintain current academic performance and engagement."
+                )
+
 
             explanation = " ".join(reasons)
             suggestion = " ".join(suggestions)
 
+
             # ---------------------------
-            # 7️⃣ Render Template
+            # 7️⃣ Render Result
             # ---------------------------
             return render_template(
                 "prediction.html",
@@ -259,13 +321,14 @@ def predict(prediction_type):
             )
 
         except Exception as e:
+
             return render_template(
                 "prediction.html",
                 prediction_type=prediction_type,
                 error=str(e)
             )
 
-    # GET request
+
     return render_template(
         "prediction.html",
         prediction_type=prediction_type,
