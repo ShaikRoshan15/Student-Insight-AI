@@ -3,107 +3,112 @@
 
 <div class="glass-card">
 
-    <!-- TITLE -->
-    <h2 class="prediction-title">
-        {% if prediction_type == "suspension" %}
-            Student Suspension Risk Assessment
-        {% elif prediction_type == "dropout" %}
-            Student Dropout Risk Assessment
-        {% endif %}
-    </h2>
+<!-- TITLE -->
+<h2 class="prediction-title">
+    {% if prediction_type == "suspension" %}
+        Student Suspension Risk Assessment
+    {% elif prediction_type == "dropout" %}
+        Student Dropout Risk Assessment
+    {% else %}
+        Student Risk Assessment
+    {% endif %}
+</h2>
 
-    <p class="prediction-subtitle">
-        Enter student details to evaluate risk status.
-    </p>
+<p class="prediction-subtitle">
+    Enter student details to evaluate risk status.
+</p>
 
-    <!-- FORM -->
-    <form method="POST">
+<!-- FORM -->
+<form method="POST" action="{{ url_for('predict', prediction_type=prediction_type) }}">
 
-        <div class="form-grid">
+    <div class="form-grid">
 
-            <div class="form-group">
-                <label>CGPA (0 - 10)</label>
-                <input type="number" step="0.1" name="cgpa"
-                       class="form-control"
-                       value="{{ cgpa if cgpa is defined else '' }}"
-                       required>
-            </div>
-
-            <div class="form-group">
-                <label>Attendance Percentage (0 - 100)</label>
-                <input type="number" step="0.1" name="attendance"
-                       class="form-control"
-                       value="{{ attendance if attendance is defined else '' }}"
-                       required>
-            </div>
-
-            <div class="form-group">
-                <label>Number of Backlogs</label>
-                <input type="number" name="backlogs"
-                       class="form-control"
-                       value="{{ backlogs if backlogs is defined else '' }}"
-                       required>
-            </div>
-
-            <div class="form-group">
-                <label>Parental Income (₹ per month)</label>
-                <input type="number" name="income"
-                       class="form-control"
-                       value="{{ income if income is defined else '' }}"
-                       required>
-            </div>
-
-            <div class="form-group">
-                <label>Behavior Rating (1 - 10)</label>
-                <input type="number" name="behavior"
-                       min="1" max="10"
-                       class="form-control"
-                       value="{{ behavior if behavior is defined else '' }}"
-                       required>
-            </div>
-
-            <div class="form-group">
-                <label>Performance Trend</label>
-                <select name="trend" class="form-control" required>
-                    <option value="-1">Declining</option>
-                    <option value="0">Stable</option>
-                    <option value="1">Improving</option>
-                </select>
-            </div>
-
+        <div class="form-group">
+            <label>CGPA (0 - 10)</label>
+            <input type="number" step="0.1" name="cgpa"
+                   class="form-control"
+                   value="{{ cgpa if cgpa is defined else '' }}"
+                   required>
         </div>
 
-        <button type="submit" class="btn-submit">
-            Assess Risk
-        </button>
-
-    </form>
-
-    <!-- RESULT -->
-    {% if explanation %}
-    <div class="result-box
-        {% if predicted_label == 'Low Risk' %}result-low
-        {% elif predicted_label == 'Medium Risk' %}result-medium
-        {% else %}result-high{% endif %}">
-
-        <p><strong>Prediction:</strong> {{ predicted_label }}</p>
-
-        <div class="confidence-badge">
-            Confidence: {{ confidence }}%
+        <div class="form-group">
+            <label>Attendance Percentage (0 - 100)</label>
+            <input type="number" step="0.1" name="attendance"
+                   class="form-control"
+                   value="{{ attendance if attendance is defined else '' }}"
+                   required>
         </div>
 
-        <p style="margin-top: 15px;">
-            <strong>Reason:</strong><br>
-            {{ explanation }}
-        </p>
+        <div class="form-group">
+            <label>Number of Backlogs</label>
+            <input type="number" name="backlogs"
+                   class="form-control"
+                   value="{{ backlogs if backlogs is defined else '' }}"
+                   required>
+        </div>
 
-        <p style="margin-top: 10px;">
-            <strong>Suggestion:</strong><br>
-            {{ suggestion }}
-        </p>
+        <div class="form-group">
+            <label>Parental Income (₹ per month)</label>
+            <input type="number" name="income"
+                   class="form-control"
+                   value="{{ income if income is defined else '' }}"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label>Behavior Rating (1 - 10)</label>
+            <input type="number" name="behavior"
+                   min="1" max="10"
+                   class="form-control"
+                   value="{{ behavior if behavior is defined else '' }}"
+                   required>
+        </div>
+
+        <!-- PICKLIST -->
+        <div class="form-group">
+            <label>Performance Trend</label>
+            <select name="trend" class="form-control" required>
+                <option value="" disabled selected>Select Performance Trend</option>
+                <option value="-1">Declining</option>
+                <option value="0">Stable</option>
+                <option value="1">Improving</option>
+            </select>
+        </div>
 
     </div>
-    {% endif %}
+
+    <button type="submit" class="btn-submit">
+        Assess Risk
+    </button>
+
+</form>
+
+<!-- RESULT -->
+{% if predicted_label %}
+<div class="result-box
+    {% if predicted_label == 'Low Risk' %}result-low
+    {% elif predicted_label == 'Medium Risk' %}result-medium
+    {% else %}result-high{% endif %}">
+
+    <p><strong>Prediction:</strong> {{ predicted_label }}</p>
+
+    <div class="confidence-badge">
+        Confidence: {{ confidence }}%
+    </div>
+
+    <p style="margin-top: 15px;">
+        <strong>Reason:</strong><br>
+        {{ explanation }}
+    </p>
+
+    <p style="margin-top: 10px;">
+        <strong>Suggestion:</strong><br>
+        {{ suggestion }}
+    </p>
+
+</div>
+{% endif %}
+
 
 </div>
 
