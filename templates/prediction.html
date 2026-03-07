@@ -64,14 +64,27 @@
                    required>
         </div>
 
-        <!-- PICKLIST -->
+        <!-- TREND PICKLIST (FIXED) -->
         <div class="form-group">
             <label>Performance Trend</label>
             <select name="trend" class="form-control" required>
-                <option value="" disabled selected>Select Performance Trend</option>
-                <option value="-1">Declining</option>
-                <option value="0">Stable</option>
-                <option value="1">Improving</option>
+
+                <option value="" disabled {% if trend is none %}selected{% endif %}>
+                    Select Performance Trend
+                </option>
+
+                <option value="-1" {% if trend == -1 %}selected{% endif %}>
+                    Declining
+                </option>
+
+                <option value="0" {% if trend == 0 %}selected{% endif %}>
+                    Stable
+                </option>
+
+                <option value="1" {% if trend == 1 %}selected{% endif %}>
+                    Improving
+                </option>
+
             </select>
         </div>
 
@@ -82,6 +95,7 @@
     </button>
 
 </form>
+
 
 <!-- RESULT -->
 {% if predicted_label %}
@@ -108,7 +122,6 @@
 
 </div>
 {% endif %}
-
 
 </div>
 
